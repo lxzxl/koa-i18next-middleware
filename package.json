@@ -1,0 +1,33 @@
+{
+    "name": "koa-i18next",
+    "version": "1.0.0",
+    "description": "An i18next middleware for koa2 framework.",
+    "main": "index.js",
+    "scripts": {
+        "dev": "node app",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/lxzxl/koa-i18next.git"
+    },
+    "keywords": [
+        "i18",
+        "i18next",
+        "koa",
+        "koa2"
+    ],
+    "author": "lxzxl",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/lxzxl/koa-i18next/issues"
+    },
+    "homepage": "https://github.com/lxzxl/koa-i18next#readme",
+    "dependencies": {
+        "i18next": "^8.0.0",
+        "i18next-express-middleware": "^1.0.4"
+    },
+    "devDependencies": {
+        "koa": "^2.2.0"
+    }
+}
