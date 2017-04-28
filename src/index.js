@@ -1,82 +1,92 @@
-/**
- * Created by steven on 4/27/17.
- */
-const utils = require('i18next-express-middleware/lib/utils');
-exports.languageDetector = require('i18next-express-middleware').languageDetector;
+import * as utils from './utils';
+import LD from './LanguageDetector';
 
-exports.handle = function(i18next, options = {}) {
-    return async function i18m(ctx, next) {
+export var LanguageDetector = LD;
+
+export function getHandler(i18next, options = {}) {
+    return async function(ctx, next) {
+        let res = ctx.response;
+        let req = ctx.request;
         let ignores = options.ignoreRoutes instanceof Array && options.ignoreRoutes || [];
-        if (!ignores.some(ignore => ctx.request.path.includes(ignores[i]))) {
+        if (!ignores.some(ignore => ctx.path.includes(ignores[i]))) {
             let i18n = i18next.cloneInstance({ initImmediate: false });
             i18n.on('languageChanged', (lng) => { // Keep language in sync
-                ctx.request.language = ctx.request.locale = ctx.request.lng = lng;
-                ctx.request.languages = i18next.services.languageUtils.toResolveHierarchy(lng);
+                req.language = lng;
+                req.locale = lng;
+                req.lng = lng;
+                req.languages = i18next.services.languageUtils.toResolveHierarchy(lng);
             });
 
-            let lng = ctx.request.lng;
-            if (!ctx.request.lng && i18next.services.languageDetector) lng = i18next.services.languageDetector.detect(ctx.request, ctx.response);
+            let lng = req.lng;
+            if (!lng && i18next.services.languageDetector) {
+                lng = i18next.services.languageDetector.detect(req, res);
+            }
 
-            // set locale
-            ctx.request.language = ctx.request.locale = ctx.request.lng = lng;
-            ctx.request.languages = i18next.services.languageUtils.toResolveHierarchy(lng);
+            // set request locale
+            req.language = lng;
+            req.locale = lng;
+            req.lng = lng;
+            req.languages = i18next.services.languageUtils.toResolveHierarchy(lng);
 
             // trigger sync to instance - might trigger async load!
             i18n.changeLanguage(lng || i18next.options.fallbackLng[0]);
 
-            if (ctx.request.i18nextLookupName === 'path' && options.removeLngFromUrl) {
-                ctx.request.url = utils.removeLngFromUrl(ctx.request.url, i18next.services.languageDetector.options.lookupFromPathIndex);
+            if (req.i18nextLookupName === 'path' && options.removeLngFromUrl) {
+                req.url = utils.removeLngFromUrl(req.url, i18next.services.languageDetector.options.lookupFromPathIndex);
             }
 
             let t = i18n.t.bind(i18n);
             let exists = i18n.exists.bind(i18n);
 
-            // assert for ctx.request
-            ctx.request.i18n = i18n;
-            ctx.request.t = t;
+            // assert for req
+            req.i18n = i18n;
+            req.t = t;
 
-            // assert for ctx.response -> template
-            if (ctx.response) {
-                ctx.response.i18n = {
-                    t: t,
-                    exists: exists,
-                    i18n: i18n,
-                    language: lng,
-                    languageDir: i18next.dir(lng)
-                }
+            // assert for res -> template
+            if (!res.locals) {
+                res.locals = {};
             }
+            res.locals.t = t;
+            res.locals.exists = exists;
+            res.locals.i18n = i18n;
+            res.locals.language = lng;
+            res.locals.languageDir = i18next.dir(lng);
 
             if (i18next.services.languageDetector) {
-                i18next.services.languageDetector.cacheUserLanguage(ctx.request, ctx.response, lng);
+                i18next.services.languageDetector.cacheUserLanguage(req, res, lng);
             }
 
             // load resources
-            if (ctx.request.lng) {
-                i18next.loadLanguages(ctx.request.lng, function() {
-                    next();
+            if (!req.lng) {
+                await next();
+            } else {
+                i18next.loadLanguages(req.lng, async function() {
+                    await next();
                 });
             }
+        } else {
+            await next();
         }
-        await next();
     };
-};
-
-exports.getResourcesHandler = function(i18next, options) {
+}
+export function getResourcesHandler(i18next, options) {
     options = options || {};
     let maxAge = options.maxAge || 60 * 60 * 24 * 30;
 
-    return function(req, res) {
-        if (!i18next.services.backendConnector) return ctx.response.status(404).send('i18next-koa-middleware:: no backend configured');
+    return function(ctx) {
+        let req = ctx.request;
+        let res = ctx.response;
+        if (!i18next.services.backendConnector) return res.status(404).send('i18next-express-middleware:: no backend configured');
 
         let resources = {};
 
-        ctx.response.contentType('json');
+        res.contentType('json');
         if (options.cache !== undefined ? options.cache : process.env.NODE_ENV === 'production') {
-            ctx.response.header('Cache-Control', 'public, max-age=' + maxAge);
-            ctx.response.header('Expires', (new Date(new Date().getTime() + maxAge * 1000)).toUTCString());
+            res.header('Cache-Control', 'public, max-age=' + maxAge);
+            res.header('Expires', (new Date(new Date().getTime() + maxAge * 1000)).toUTCString());
         } else {
-            ctx.response.header('Pragma', 'no-cache');
-            ctx.response.header('Cache-Control', 'no-cache');
+            res.header('Pragma', 'no-cache');
+            res.header('Cache-Control', 'no-cache');
         }
 
         let languages = req.query[options.lngParam || 'lng'] ? req.query[options.lngParam || 'lng'].split(' ') : [];
@@ -94,28 +104,28 @@ exports.getResourcesHandler = function(i18next, options) {
                 });
             });
 
-            ctx.response.send(resources);
+            res.send(resources);
         });
     };
 };
 
-exports.missingKeyHandler = function(i18next, options) {
+export function missingKeyHandler(i18next, options) {
     options = options || {};
 
     return function(req, res) {
         let lng = req.params[options.lngParam || 'lng'];
         let ns = req.params[options.nsParam || 'ns'];
 
-        if (!i18next.services.backendConnector) return ctx.response.status(404).send('i18next-koa-middleware:: no backend configured');
+        if (!i18next.services.backendConnector) return res.status(404).send('i18next-express-middleware:: no backend configured');
 
         for (var m in req.body) {
             i18next.services.backendConnector.saveMissing([lng], ns, m, req.body[m]);
         }
-        ctx.response.send('ok');
+        res.send('ok');
     };
 };
 
-exports.addRoute = function(i18next, route, lngs, app, verb, fc) {
+export function addRoute(i18next, route, lngs, app, verb, fc) {
     if (typeof verb === 'function') {
         fc = verb;
         verb = 'get';
@@ -144,3 +154,10 @@ exports.addRoute = function(i18next, route, lngs, app, verb, fc) {
         app[verb || 'get'].apply(app, routes.concat(callbacks));
     }
 };
+
+export default {
+    getHandler,
+    getResourcesHandler,
+    missingKeyHandler,
+    addRoute
+}

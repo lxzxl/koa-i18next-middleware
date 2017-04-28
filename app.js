@@ -3,8 +3,9 @@ const i18next = require('i18next');
 const app = new Koa();
 const i18m = require('./src');
 
-i18next.init({
-    lng: 'en',
+i18next.use(i18m.LanguageDetector).init({
+    fallbackLng: 'en',
+    preload: ['en', 'es'],
     resources: {
         en: {
             translation: {
@@ -23,14 +24,14 @@ i18next.init({
     console.log(hw);
 });
 
-app.use(i18m.handle(i18next));
+app.use(i18m.getHandler(i18next));
 
 // response
 app.use(async(ctx, next) => {
-    const start = new Date();
     await next();
-    const ms = new Date() - start;
-    ctx.body = `${ctx.method} ${ctx.url} - ${ms}ms`
+    ctx.body = ctx.response.locals.t(`key`);
 });
 
-app.listen(3000);
+app.listen(3000, function() {
+    console.log('server listening');
+});
