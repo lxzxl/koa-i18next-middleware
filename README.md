@@ -74,8 +74,8 @@ app.use(i18m.getHandler(i18next));
 ```
 
 ## License
-
 MIT © [steven](http://github.com/lxzxl)
+MIT © [i18next-express-middleware](https://github.com/i18next/i18next-express-middleware/blob/master/LICENSE)
 
 [npm-url]: https://npmjs.org/package/koa-i18next-middleware
 [npm-image]: https://img.shields.io/npm/v/koa-i18next-middleware.svg?style=flat-square
