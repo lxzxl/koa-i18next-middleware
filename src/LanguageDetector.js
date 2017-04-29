@@ -1,17 +1,17 @@
 import * as utils from './utils';
-// import cookieLookup from './languageLookups/cookie';
 import querystringLookup from './languageLookups/querystring';
-// import pathLookup from './languageLookups/path';
+import pathLookup from './languageLookups/path';
+// import cookieLookup from './languageLookups/cookie';
 // import headerLookup from './languageLookups/header';
 // import sessionLookup from './languageLookups/session';
 
 function getDefaults() {
     return {
-        order: [ /*'path', 'session' */ 'querystring', 'cookie', 'header'],
+        order: [ /*'session', */ 'querystring', 'cookie', 'header', 'path'],
         lookupQuerystring: 'lng',
         // lookupCookie: 'i18next',
         // lookupSession: 'lng',
-        // lookupFromPathIndex: 0,
+        lookupFromPathIndex: 0,
 
         // cache user language
         caches: false // ['cookie']
@@ -33,9 +33,9 @@ class LanguageDetector {
         this.options = utils.defaults(options, this.options || {}, getDefaults());
         this.allOptions = allOptions;
 
-        // this.addDetector(cookieLookup);
         this.addDetector(querystringLookup);
-        // this.addDetector(pathLookup);
+        this.addDetector(pathLookup);
+        // this.addDetector(cookieLookup);
         // this.addDetector(headerLookup);
         // this.addDetector(sessionLookup);
     }
