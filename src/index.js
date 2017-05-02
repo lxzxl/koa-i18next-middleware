@@ -1,5 +1,5 @@
+import LD from 'koa-i18next-detector';
 import * as utils from './utils';
-import LD from './LanguageDetector';
 
 export var LanguageDetector = LD;
 
@@ -43,14 +43,16 @@ export function getHandler(i18next, options = {}) {
             req.t = t;
 
             // assert for res -> template
-            if (!res.locals) {
-                res.locals = {};
+            let localsName = options.locals || 'locals';
+            if (!res[localsName]) {
+                res[localsName] = {};
             }
-            res.locals.t = t;
-            res.locals.exists = exists;
-            res.locals.i18n = i18n;
-            res.locals.language = lng;
-            res.locals.languageDir = i18next.dir(lng);
+
+            res[localsName].t = t;
+            res[localsName].exists = exists;
+            res[localsName].i18n = i18n;
+            res[localsName].language = lng;
+            res[localsName].languageDir = i18next.dir(lng);
 
             if (i18next.services.languageDetector) {
                 i18next.services.languageDetector.cacheUserLanguage(ctx, lng);

@@ -24,7 +24,7 @@ i18next.use(i18m.LanguageDetector).init({
     console.log(hw);
 });
 
-app.use(i18m.getHandler(i18next));
+app.use(i18m.getHandler(i18next, { locals: 'locals' }));
 
 // response
 app.use(async(ctx, next) => {
