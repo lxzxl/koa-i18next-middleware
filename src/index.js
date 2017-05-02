@@ -53,7 +53,7 @@ export function getHandler(i18next, options = {}) {
             res.locals.languageDir = i18next.dir(lng);
 
             if (i18next.services.languageDetector) {
-                i18next.services.languageDetector.cacheUserLanguage(req, res, lng);
+                i18next.services.languageDetector.cacheUserLanguage(ctx, lng);
             }
 
             // load resources
@@ -69,103 +69,7 @@ export function getHandler(i18next, options = {}) {
         }
     };
 }
-export function getResourcesHandler(i18next, options) {
-    options = options || {};
-    let maxAge = options.maxAge || 60 * 60 * 24 * 30;
-
-    return function(ctx) {
-        let req = ctx.request;
-        let res = ctx.response;
-        if (!i18next.services.backendConnector) {
-            this.status = 404;
-            this.body = 'i18next-express-middleware:: no backend configured';
-            return;
-        }
-
-        let resources = {};
-
-        res.type = 'json';
-        if (options.cache !== undefined ? options.cache : process.env.NODE_ENV === 'production') {
-            res.set({
-                'Cache-Control': 'public, max-age=' + maxAge,
-                'Expires': (new Date(new Date().getTime() + maxAge * 1000)).toUTCString()
-            });
-        } else {
-            res.set({
-                'Pragma': 'no-cache',
-                'Cache-Control': 'no-cache'
-            });
-        }
-
-        let languages = req.query[options.lngParam || 'lng'] ? req.query[options.lngParam || 'lng'].split(' ') : [];
-        let namespaces = req.query[options.nsParam || 'ns'] ? req.query[options.nsParam || 'ns'].split(' ') : [];
-
-        // extend ns
-        namespaces.forEach(ns => {
-            if (i18next.options.ns && i18next.options.ns.indexOf(ns) < 0) i18next.options.ns.push(ns);
-        });
-
-        i18next.services.backendConnector.load(languages, namespaces, function() {
-            languages.forEach(lng => {
-                namespaces.forEach(ns => {
-                    utils.setPath(resources, [lng, ns], i18next.getResourceBundle(lng, ns));
-                });
-            });
-
-            res.send(resources);
-        });
-    };
-};
-
-export function missingKeyHandler(i18next, options) {
-    options = options || {};
-
-    return function(req, res) {
-        let lng = req.params[options.lngParam || 'lng'];
-        let ns = req.params[options.nsParam || 'ns'];
-
-        if (!i18next.services.backendConnector) return res.status(404).send('i18next-express-middleware:: no backend configured');
-
-        for (var m in req.body) {
-            i18next.services.backendConnector.saveMissing([lng], ns, m, req.body[m]);
-        }
-        res.send('ok');
-    };
-};
-
-export function addRoute(i18next, route, lngs, app, verb, fc) {
-    if (typeof verb === 'function') {
-        fc = verb;
-        verb = 'get';
-    }
-
-    // Combine `fc` and possible more callbacks to one array
-    var callbacks = [fc].concat(Array.prototype.slice.call(arguments, 6));
-
-    for (var i = 0, li = lngs.length; i < li; i++) {
-        var parts = String(route).split('/');
-        var locRoute = [];
-        for (var y = 0, ly = parts.length; y < ly; y++) {
-            var part = parts[y];
-            // if the route includes the parameter :lng
-            // this is replaced with the value of the language
-            if (part === ':lng') {
-                locRoute.push(lngs[i]);
-            } else if (part.indexOf(':') === 0 || part === '') {
-                locRoute.push(part);
-            } else {
-                locRoute.push(i18next.t(part, { lng: lngs[i] }));
-            }
-        }
-
-        var routes = [locRoute.join('/')];
-        app[verb || 'get'].apply(app, routes.concat(callbacks));
-    }
-};
 
 export default {
-    getHandler,
-    getResourcesHandler,
-    missingKeyHandler,
-    addRoute
+    getHandler
 }

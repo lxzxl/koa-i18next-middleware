@@ -21,17 +21,17 @@ function getDefaults() {
 }
 
 class LanguageDetector {
-    constructor(services, options = {}, allOptions = {}) {
+    constructor(services, options = {}, i18nextOptions = {}) {
         this.type = 'languageDetector';
         this.detectors = {};
 
-        this.init(services, options, allOptions);
+        this.init(services, options, i18nextOptions);
     }
 
-    init(services, options = {}, allOptions = {}) {
+    init(services, options = {}, i18nextOptions = {}) {
         this.services = services;
         this.options = utils.defaults(options, this.options || {}, getDefaults());
-        this.allOptions = allOptions;
+        this.allOptions = i18nextOptions;
 
         this.addDetector(querystringLookup);
         this.addDetector(pathLookup);
@@ -71,7 +71,7 @@ class LanguageDetector {
         return found || (this.allOptions.fallbackLng && this.allOptions.fallbackLng[0]);
     }
 
-    cacheUserLanguage(req, res, lng, caches) {
+    cacheUserLanguage(ctx, lng, caches) {
         if (arguments.length < 3) return;
         if (!caches) caches = this.options.caches;
         if (!caches) return;
