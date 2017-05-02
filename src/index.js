@@ -76,17 +76,25 @@ export function getResourcesHandler(i18next, options) {
     return function(ctx) {
         let req = ctx.request;
         let res = ctx.response;
-        if (!i18next.services.backendConnector) return res.status(404).send('i18next-express-middleware:: no backend configured');
+        if (!i18next.services.backendConnector) {
+            this.status = 404;
+            this.body = 'i18next-express-middleware:: no backend configured';
+            return;
+        }
 
         let resources = {};
 
-        res.contentType('json');
+        res.type = 'json';
         if (options.cache !== undefined ? options.cache : process.env.NODE_ENV === 'production') {
-            res.header('Cache-Control', 'public, max-age=' + maxAge);
-            res.header('Expires', (new Date(new Date().getTime() + maxAge * 1000)).toUTCString());
+            res.set({
+                'Cache-Control': 'public, max-age=' + maxAge,
+                'Expires': (new Date(new Date().getTime() + maxAge * 1000)).toUTCString()
+            });
         } else {
-            res.header('Pragma', 'no-cache');
-            res.header('Cache-Control', 'no-cache');
+            res.set({
+                'Pragma': 'no-cache',
+                'Cache-Control': 'no-cache'
+            });
         }
 
         let languages = req.query[options.lngParam || 'lng'] ? req.query[options.lngParam || 'lng'].split(' ') : [];
