@@ -33,7 +33,7 @@
 </p>
 
 <p align="center"><big>
-
+An i18next middleware for koa2 framework.
 </big></p>
 
 
