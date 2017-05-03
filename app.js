@@ -1,9 +1,10 @@
 const Koa = require('koa');
 const i18next = require('i18next');
 const app = new Koa();
+import LD from "../koa-i18next-detector/src";
 const i18m = require('./src');
 
-i18next.use(i18m.LanguageDetector).init({
+i18next.use(LD).init({
     fallbackLng: 'en',
     preload: ['en', 'es'],
     resources: {

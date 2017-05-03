@@ -47,7 +47,7 @@ npm i -S koa-i18next-middleware
 
 ```js
 const i18next = require('i18next');
-const i18m = require('./src');
+const i18m = require('koa-i18next-middleware');
 
 i18next.use(i18m.LanguageDetector).init({
     fallbackLng: 'en',

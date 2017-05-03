@@ -1,6 +1,5 @@
 import * as utils from './utils';
-// import LD from "koa-i18next-detector";
-import LD from "../../koa-i18next-detector/src";
+import LD from "koa-i18next-detector";
 
 export var LanguageDetector = LD;
 
