@@ -6,7 +6,10 @@
     "scripts": {
         "debug": "node register",
         "build": "babel src -d lib",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "patch": "npm version patch && npm publish",
+        "minor": "npm version minor && npm publish",
+        "major": "npm version major && npm publish",
+        "postpublish": "git push origin master --follow-tags"
     },
     "repository": {
         "type": "git",
@@ -25,8 +28,7 @@
     },
     "homepage": "https://github.com/lxzxl/koa-i18next-middleware#readme",
     "dependencies": {
-        "i18next": "^8.0.0",
-        "i18next-express-middleware": "^1.0.4"
+        "koa-i18next-detector": "^0.3.2"
     },
     "devDependencies": {
         "babel-cli": "^6.24.1",
@@ -36,6 +38,8 @@
         "babel-preset-es2015": "^6.24.1",
         "babel-preset-koa2-node7": "^0.1.0",
         "babel-register": "^6.24.1",
+        "cookies": "^0.7.0",
+        "i18next": "^8.1.0",
         "koa": "^2.2.0"
     }
 }

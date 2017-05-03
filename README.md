@@ -63,6 +63,23 @@ i18next.use(i18m.LanguageDetector).init({
                 "key": "es hello world es"
             }
         }
+    },
+    detection: {
+        order: ['querystring', 'path', 'cookie', 'header', 'session'],
+
+        lookupQuerystring: 'lng',
+
+        lookupParam: 'lng', // for route like: 'path1/:lng/result'
+        lookupFromPathIndex: 0,
+
+        lookupCookie: 'i18next',
+        // cookieExpirationDate: new Date(), // default: +1 year
+        // cookieDomain: '', // default: current domain.
+
+        lookupSession: 'lng',
+
+        // cache user language
+        caches: ['cookie']
     }
 }, (err, t) => {
     // initialized and ready to go!
@@ -70,12 +87,13 @@ i18next.use(i18m.LanguageDetector).init({
     console.log(hw);
 });
 
-app.use(i18m.getHandler(i18next));
+app.use(i18m.getHandler(i18next, { locals: 'locals' }));
+
 ```
 
 ## License
-
 MIT © [steven](http://github.com/lxzxl)
+MIT © [i18next-express-middleware](https://github.com/i18next/i18next-express-middleware/blob/master/LICENSE)
 
 [npm-url]: https://npmjs.org/package/koa-i18next-middleware
 [npm-image]: https://img.shields.io/npm/v/koa-i18next-middleware.svg?style=flat-square
