@@ -17,6 +17,23 @@ i18next.use(i18m.LanguageDetector).init({
                 "key": "es hello world es"
             }
         }
+    },
+    detection: {
+        order: ['querystring', 'path', 'cookie', 'header', 'session'],
+
+        lookupQuerystring: 'lng',
+
+        lookupParam: 'lng', // for route like: 'path1/:lng/result'
+        lookupFromPathIndex: 0,
+
+        lookupCookie: 'i18next',
+        // cookieExpirationDate: new Date(), // default: +1 year
+        // cookieDomain: '', // default: current domain.
+
+        lookupSession: 'lng',
+
+        // cache user language
+        caches: ['cookie']
     }
 }, (err, t) => {
     // initialized and ready to go!
