@@ -20,7 +20,7 @@ i18next.use(LD).init({
         }
     },
     detection: {
-        order: ['querystring', 'path', 'cookie', 'header', 'session'],
+        order: [ /*'querystring', 'path', 'cookie',*/ 'header', 'session'],
 
         lookupQuerystring: 'lng',
 
@@ -34,7 +34,7 @@ i18next.use(LD).init({
         lookupSession: 'lng',
 
         // cache user language
-        caches: ['cookie']
+        caches: false // ['cookie']
     }
 }, (err, t) => {
     // initialized and ready to go!

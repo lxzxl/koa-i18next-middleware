@@ -19,7 +19,7 @@ export function getHandler(i18next, options = {}) {
 
             let lng = req.lng;
             if (!lng && i18next.services.languageDetector) {
-                lng = i18next.services.languageDetector.detect(req, res);
+                lng = i18next.services.languageDetector.detect(ctx);
             }
 
             // set request locale
