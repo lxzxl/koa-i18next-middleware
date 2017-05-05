@@ -49,6 +49,25 @@ npm i -S koa-i18next-middleware
 const i18next = require('i18next');
 const i18m = require('koa-i18next-middleware');
 
+// add custom detector.
+i18m.LanguageDetector.addDetector({
+    name: 'mySessionDetector',
+
+    lookup(ctx, options) {
+        let found;
+        if (options.lookupSession && ctx && ctx.sessions) {
+            found = ctx.sessions[options.lookupMySession];
+        }
+        return found;
+    },
+
+    cacheUserLanguage(ctx, lng, options = {}) {
+        if (options.lookupMySession && ctx && ctx.session) {
+            ctx.session[options.lookupMySession] = lng;
+        }
+    }
+});
+
 i18next.use(i18m.LanguageDetector).init({
     fallbackLng: 'en',
     preload: ['en', 'es'],
@@ -65,21 +84,26 @@ i18next.use(i18m.LanguageDetector).init({
         }
     },
     detection: {
-        order: ['querystring', 'path', 'cookie', 'header', 'session'],
+        order: ['querystring', 'path', /*'cookie', 'header',*/ 'session', 'mySessionDetector'],
 
         lookupQuerystring: 'lng',
 
         lookupParam: 'lng', // for route like: 'path1/:lng/result'
         lookupFromPathIndex: 0,
 
+        // currently using ctx.cookies
         lookupCookie: 'i18next',
         // cookieExpirationDate: new Date(), // default: +1 year
         // cookieDomain: '', // default: current domain.
 
+        // currently using ctx.session
         lookupSession: 'lng',
 
+        // other options
+        lookupMySession: 'lang',
+
         // cache user language
-        caches: ['cookie']
+        caches: ['cookie', 'mySessionDetector']
     }
 }, (err, t) => {
     // initialized and ready to go!
