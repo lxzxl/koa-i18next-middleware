@@ -45,6 +45,8 @@ npm i -S koa-i18next-middleware
 
 ## Usage
 
+#### Notice: this plugin requires koa2 with async enabled in Node.js.
+
 ```js
 const i18next = require('i18next');
 const i18m = require('koa-i18next-middleware');
@@ -111,7 +113,11 @@ i18next.use(i18m.LanguageDetector).init({
     console.log(hw);
 });
 
-app.use(i18m.getHandler(i18next, { locals: 'locals' }));
+app.use(i18m.getHandler(i18next, {
+        locals: 'locals',
+        ignoreRoutes: ['/no-lng-route'],
+    })
+);
 
 ```
 
