@@ -1,2 +1,2 @@
 require('babel-register');
-const app = require('./app');
+const app = require('./index');
