@@ -5,6 +5,7 @@ npm-debug.log*
 dist
 .vscode
 .idea
+.history
 
 # Runtime data
 pids
