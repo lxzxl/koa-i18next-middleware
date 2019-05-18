@@ -74,9 +74,8 @@ export function getHandler(i18next, options = {}) {
         if (!req.lng) {
             await next();
         } else {
-            await i18next.loadLanguages(req.lng, async function() {
-                await next();
-            });
+            await i18next.loadLanguages(req.lng);
+            await next();
         }
     };
 }
