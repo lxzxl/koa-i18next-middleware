@@ -6,7 +6,7 @@
     "scripts": {
         "debug": "node register",
         "build": "babel src -d dist",
-        "prepare": "npm run build -s",
+        "prepublish": "npm run build -s",
         "patch": "npm version patch && npm publish",
         "minor": "npm version minor && npm publish",
         "major": "npm version major && npm publish",
