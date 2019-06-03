@@ -71,12 +71,10 @@ export function getHandler(i18next, options = {}) {
         }
 
         // load resources
-        if (!req.lng) {
-            await next();
-        } else {
+        if (req.lng) {
             await i18next.loadLanguages(req.lng);
-            await next();
         }
+        await next();
     };
 }
 
