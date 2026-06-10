@@ -1,0 +1,4 @@
+# Exempt our own sibling package from the global 7-day minimumReleaseAge
+# gate so freshly released versions install immediately.
+minimumReleaseAgeExclude:
+  - koa-i18next-detector

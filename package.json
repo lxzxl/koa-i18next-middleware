@@ -1,49 +1,76 @@
 {
-    "name": "koa-i18next-middleware",
-    "version": "1.1.12",
-    "description": "An i18next middleware for koa2 framework.",
-    "main": "dist/index.js",
-    "scripts": {
-        "dev": "node register",
-        "build": "babel src -d dist",
-        "prepublish": "npm run build -s",
-        "patch": "npm version patch && npm publish",
-        "minor": "npm version minor && npm publish",
-        "major": "npm version major && npm publish",
-        "postpublish": "git push origin master --follow-tags",
-        "toc": "doctoc --github --title \"# Changelog\" CHANGELOG.md"
+  "name": "koa-i18next-middleware",
+  "version": "2.0.0",
+  "description": "An i18next middleware for Koa 2 and Koa 3.",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.cts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/lxzxl/koa-i18next-middleware.git"
-    },
-    "keywords": [
-        "i18",
-        "i18next",
-        "koa",
-        "koa2"
-    ],
-    "author": "lxzxl <lixiaozheng1990@gmail.com>",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/lxzxl/koa-i18next-middleware/issues"
-    },
-    "homepage": "https://github.com/lxzxl/koa-i18next-middleware#readme",
-    "dependencies": {
-        "cookies": "^0.7.1",
-        "i18next": "^15.1.3",
-        "koa-i18next-detector": "^0.7.1"
-    },
-    "devDependencies": {
-        "babel-cli": "^6.24.1",
-        "babel-core": "^6.24.1",
-        "babel-eslint": "^7.2.3",
-        "babel-preset-env": "^1.4.0",
-        "babel-preset-es2015": "^6.24.1",
-        "babel-preset-koa2-node7": "^0.1.0",
-        "babel-register": "^6.24.1",
-        "doctoc": "^1.3.0",
-        "koa": "^2.2.0",
-        "rimraf": "^2.6.2"
-    }
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm run typecheck && pnpm run test && pnpm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lxzxl/koa-i18next-middleware.git"
+  },
+  "keywords": [
+    "i18n",
+    "i18next",
+    "koa",
+    "koa2",
+    "koa3",
+    "middleware"
+  ],
+  "author": "lxzxl <bithub@yahoo.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lxzxl/koa-i18next-middleware/issues"
+  },
+  "homepage": "https://github.com/lxzxl/koa-i18next-middleware#readme",
+  "dependencies": {
+    "koa-i18next-detector": "^1.0.0"
+  },
+  "peerDependencies": {
+    "i18next": ">=19.6.0",
+    "koa": ">=2.0.0"
+  },
+  "devDependencies": {
+    "@types/koa": "^3.0.0",
+    "@types/node": "^24.0.0",
+    "@types/supertest": "^6.0.0",
+    "i18next": "^26.0.0",
+    "koa": "^3.0.0",
+    "koa2": "npm:koa@^2.16.0",
+    "supertest": "^7.0.0",
+    "tsdown": "^0.22.0",
+    "typescript": "^6.0.0",
+    "vitest": "^4.0.0"
+  },
+  "packageManager": "pnpm@10.25.0"
 }
